@@ -8,7 +8,7 @@ import Post from './component/Post';
 const PER_PAGE = 10;
 
 function App() {
-  const { data, fetchNextPage, isLoading } = useInfiniteQuery(
+  const { data, fetchNextPage, isFetchingNextPage } = useInfiniteQuery(
     ['posts'],
     ({ pageParam = 1 }) => getPosts(pageParam),
     {
@@ -35,7 +35,12 @@ function App() {
     }
   }, [inView]);
 
-  return <>{content}</>;
+  return (
+    <div>
+      {content}
+      {isFetchingNextPage ? 'loading' : ''}
+    </div>
+  );
 }
 
 export default App;
