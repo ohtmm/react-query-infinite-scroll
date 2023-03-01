@@ -1,30 +1,41 @@
 import { useInfiniteQuery } from '@tanstack/react-query';
+import { useEffect } from 'react';
+import { useInView } from 'react-intersection-observer';
 import getPosts from './api/axios';
 import './App.css';
+import Post from './component/Post';
+
+const PER_PAGE = 10;
 
 function App() {
-  const { data, fetchNextPage } = useInfiniteQuery(
+  const { data, fetchNextPage, isLoading } = useInfiniteQuery(
     ['posts'],
     ({ pageParam = 1 }) => getPosts(pageParam),
     {
       getNextPageParam: (last, all) => {
-        return last.length ? all.length + 1 : undefined;
+        return last.length < PER_PAGE ? undefined : all.length + 1;
       },
     }
   );
 
-  return (
-    <>
-      {data?.pages.map((page) =>
-        page.map((item) => (
-          <div key={item.id} style={{ borderBottom: '1px solid #fff' }}>
-            {item.body}
-          </div>
-        ))
-      )}
-      <button onClick={() => fetchNextPage()}>more</button>
-    </>
+  const { ref, inView } = useInView({ threshold: 0.3 });
+  const content = data?.pages.map((page) =>
+    page.map((item, idx) => {
+      if (idx === page.length - 1) {
+        return <Post key={item.id} item={item} ref={ref} />;
+      } else {
+        return <Post key={item.id} item={item} />;
+      }
+    })
   );
+
+  useEffect(() => {
+    if (inView) {
+      fetchNextPage();
+    }
+  }, [inView]);
+
+  return <>{content}</>;
 }
 
 export default App;
