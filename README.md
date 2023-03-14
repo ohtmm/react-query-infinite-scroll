@@ -1,4 +1,4 @@
-# react-query-exercise
+# react-query + infinite scroll
 
 ### 구현한 기능 
 1. react-query의 useInfiniteQuery 활용한 데이터 패칭 및 캐싱 
